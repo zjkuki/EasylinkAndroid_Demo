@@ -2,10 +2,14 @@
 
 buildscript {
     repositories {
-        jcenter()
+        google()
+        jcenter {
+            url 'https://maven.aliyun.com/repository/jcenter'
+            name 'jcenter'
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath 'com.android.tools.build:gradle:3.5.1'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
@@ -16,7 +20,12 @@ buildscript {
 }
 allprojects {
     repositories {
-        jcenter()
+        google()
+        //jcenter()
+        jcenter {
+            url 'https://maven.aliyun.com/repository/jcenter'
+            name 'jcenter'
+        }
     }
 }
 

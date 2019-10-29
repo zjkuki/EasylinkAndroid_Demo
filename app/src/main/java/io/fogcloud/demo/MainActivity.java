@@ -12,10 +12,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+
 import io.fogcloud.sdk.easylink.api.EasyLink;
-import io.fogcloud.sdk.easylink.api.EasylinkP2P;
+//import io.fogcloud.sdk.easylink.api.EasylinkP2P;
 import io.fogcloud.sdk.easylink.helper.EasyLinkCallBack;
 import io.fogcloud.sdk.easylink.helper.EasyLinkParams;
+import io.fogcloud.sdk.mdns.api.MDNS;
+import io.fogcloud.sdk.mdns.helper.SearchDeviceCallBack;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private Context mContext;// 上下文
     private EditText log_view;
     private int countno;
+    private  MDNS mdns;
 
 
     @Override
@@ -33,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         mContext = this;
 
         final EasyLink el = new EasyLink(MainActivity.this);
-        final EasylinkP2P elp2p = new EasylinkP2P(mContext);
+        //final EasylinkP2P elp2p = new EasylinkP2P(mContext);
 
 
         final TextView easylinktest = (TextView) findViewById(R.id.easylinktest);
@@ -50,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
             log_view.setText("");
         }
 
+        ssid.setText("IvyWang");
+        psw.setText("03513947");
+
+        mdns = new MDNS(this);
+
         if(easylinktest != null & ssid != null & psw != null) {
             easylinktest.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -61,14 +71,36 @@ public class MainActivity extends AppCompatActivity {
                         elp.ssid = ssid.getText().toString().trim();
                         elp.password = psw.getText().toString().trim();
                         elp.sleeptime = 50;
-                        elp.runSecond = 50;
+                        elp.runSecond = 60000;
                         Toast.makeText(mContext, "open easylink", Toast.LENGTH_SHORT).show();
 
-                        elp2p.startEasyLink(elp, new EasyLinkCallBack() {
+                        el.startEasyLink(elp, new EasyLinkCallBack() {
                             @Override
                             public void onSuccess(int code, String message) {
 //                                Log.d(TAG,">>>>>>>>>>");
                                 Log.d(TAG, message);
+                                mdns.startSearchDevices("_easylink._tcp.local.", new SearchDeviceCallBack() {
+                                    @Override
+                                    public void onSuccess(int code, String message) {
+                                        super.onSuccess(code, message);
+                                        Log.d("---mdns---", message);
+                                    }
+
+                                    @Override
+                                    public void onFailure(int code, String message) {
+                                        super.onFailure(code, message);
+                                        Log.d("---mdns---", message);
+                                    }
+
+                                    @Override
+                                    public void onDevicesFind(int code, JSONArray deviceStatus) {
+                                        super.onDevicesFind(code, deviceStatus);
+                                        if (!deviceStatus.equals("")) {
+                                            Log.d("---mdns---", deviceStatus.toString());
+                                        }
+                                    }
+                                });
+
                                 send2handler(1, message);
                             }
 
@@ -82,7 +114,18 @@ public class MainActivity extends AppCompatActivity {
                         easylinktest.setText("发送配网");
                         easylinktest.setBackgroundColor(Color.rgb(63, 81, 181));
                         Toast.makeText(mContext, "stop easylink", Toast.LENGTH_SHORT).show();
-                        elp2p.stopEasyLink(new EasyLinkCallBack() {
+                        //elp2p.stopEasyLink(new EasyLinkCallBack() {
+                        mdns.stopSearchDevices(new SearchDeviceCallBack() {
+                            public void onSuccess(int code, String message) {
+                                Log.d("---mdns---", message);
+                            };
+                            @Override
+                            public void onFailure(int code, String message) {
+                                Log.d("---mdns---", message);
+                            }
+                        });
+
+                        el.stopEasyLink(new EasyLinkCallBack() {
                             @Override
                             public void onSuccess(int code, String message) {
 
