@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         if(log_view != null) {
             log_view.setText("");
         }
+        log_view.setMovementMethod(ScrollingMovementMethod.getInstance());
 
         ssid.setText("work_janady");
         psw.setText("12345678");
@@ -90,12 +92,14 @@ public class MainActivity extends AppCompatActivity {
                             public void onSuccess(int code, String message) {
 //                                Log.d(TAG,">>>>>>>>>>");
                                 Log.d(TAG, message);
+                                AppendText(TAG+"\ncode="+code+Log.d("---mdns---", "\ncode="+code+"\nmessage=\n"+message));
                                 send2handler(1, message);
                             }
 
                             @Override
                             public void onFailure(int code, String message) {
                                 Log.d(TAG, message);
+                                AppendText(TAG+"\ncode="+code+Log.d("---mdns---", "\ncode="+code+"\nmessage=\n"+message));
                                 Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -105,12 +109,14 @@ public class MainActivity extends AppCompatActivity {
                             public void onSuccess(int code, String message) {
                                 super.onSuccess(code, message);
                                 Log.d("---mdns---", "\ncode="+code+"\nmessage=\n"+message);
+                                AppendText("---mdns---\ncode="+code+Log.d("---mdns---", "\ncode="+code+"\nmessage=\n"+message));
                             }
 
                             @Override
                             public void onFailure(int code, String message) {
                                 super.onFailure(code, message);
                                 Log.d("---mdns---", "\ncode="+code+"\nmessage=\n"+message);
+                                AppendText("---mdns---\ncode="+code+Log.d("---mdns---", "\ncode="+code+"\nmessage=\n"+message));
                             }
 
                             @Override
@@ -119,8 +125,10 @@ public class MainActivity extends AppCompatActivity {
                                 if (!deviceStatus.equals("")) {
                                     send2handler(3, deviceStatus.toString());
                                     Log.d("---mdns---","\ncode="+code+"\ndeviceInfo=\n"+deviceStatus.toString());
+                                    AppendText("---mdns---\ncode="+code+"\ndeviceInfo=\n"+deviceStatus.toString());
                                 }else{
                                     Log.d("---mdns---", "\ncode="+code+"\ndeviceInfo=\n"+deviceStatus.toString());
+                                    AppendText("---mdns---\ncode="+code+"\ndeviceInfo=\n"+deviceStatus.toString());
                                 }
                             }
                         });
@@ -133,10 +141,12 @@ public class MainActivity extends AppCompatActivity {
                         mdns.stopSearchDevices(new SearchDeviceCallBack() {
                             public void onSuccess(int code, String message) {
                                 Log.d("---mdns---", message);
+                                AppendText("---mdns---\ncode="+code+Log.d("---mdns---", "\ncode="+code+"\nmessage=\n"+message));
                             };
                             @Override
                             public void onFailure(int code, String message) {
                                 Log.d("---mdns---", message);
+                                AppendText("---mdns---\ncode="+code+Log.d("---mdns---", "\ncode="+code+"\nmessage=\n"+message));
                             }
                         });
 
@@ -169,10 +179,10 @@ public class MainActivity extends AppCompatActivity {
     Handler LHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             if (msg.what == 1) {
-                log_view.setText(msg.obj.toString().trim() + "\r\n");
+                AppendText(msg.obj.toString().trim() + "\r\n");
             }
             if (msg.what == 2) {
-                log_view.setText("");
+                AppendText("");
             }
             if (msg.what ==3 ){
                 mdns.updateMessage();
@@ -180,6 +190,20 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private  void AppendText(final String str){
+        log_view.post(new Runnable() {
+            @Override
+            public void run() {
+                log_view.append(str);
+                int scrollAmount = log_view.getLayout().getLineTop(log_view.getLineCount())
+                        - log_view.getHeight();
+                if (scrollAmount > 0)
+                    log_view.scrollTo(0, scrollAmount);
+                else
+                    log_view.scrollTo(0, 0);
+            }
+        });
+    }
     private void listenwifichange() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
