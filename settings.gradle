@@ -1,1 +1,1 @@
-include ':app', ':easylinkv3'
+include ':app'

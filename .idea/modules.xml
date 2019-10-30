@@ -3,8 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/EasylinkAndroid_Demo.iml" filepath="$PROJECT_DIR$/EasylinkAndroid_Demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/EasylinkAndroid_Demo-app.iml" filepath="$PROJECT_DIR$/app/EasylinkAndroid_Demo-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/easylinkv3/easylinkv3.iml" filepath="$PROJECT_DIR$/easylinkv3/easylinkv3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/qingke-EasylinkAndroid_Demo-app.iml" filepath="$PROJECT_DIR$/app/qingke-EasylinkAndroid_Demo-app.iml" />
     </modules>
   </component>
 </project>
